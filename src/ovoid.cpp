@@ -27,31 +27,31 @@
 #define VCOUNT 3530
 #define N P-1
 
-
-
 #include "qbf.h" //This is written by Athula Gunawardena. I'm using some function out of it to start the program. This is just a helper and I'm lazy to rewrite it :-)
 
 using namespace std;
 
-void findPoints(bool, int, int &, int, int, int[], int, vector<vector<int> > &);
+//void findPoints(bool, int, int &, int, int, int[], int, vector<vector<int> > &);
 vector<int> modCheck(vector<int> , int);//passing in vector of ints, number we will be modding with
-void calculation(vector< vector<int> >,vector< vector< vector <int> > >,int,int &,vector< vector< vector<int> > > &,int &,int,int,int, int *);
+//void calculation(vector< vector<int> >,vector< vector< vector <int> > >,int,int &,vector< vector< vector<int> > > &,int &,int,int,int, int *);
 int bilinearFormOdd(vector<int> ,vector<int>  ,vector<vector<int> > multi, vector<vector<int> > add,int , int);
-int bilinearFormAny(vector<int> ,vector<int> ,vector<vector<int> > multi, vector<vector<int> > add,int size, int );
+void bilinearFormAny(const vector<int> &arrayA,const vector<int> &arrayB ,const vector<vector<int> > &multi,const vector<vector<int> > &add,const int &size,const int &mod,int &results);
 int quadraticOdd(vector<int> array,vector<vector<int> > multi,vector<vector<int> > add);
-int quadraticAny(vector<int> array,vector<vector<int> > multi,vector<vector<int> > add);
-vector<int> generateGrammian(vector<vector<int> > input,vector<vector<int> > multi, vector<vector<int> > add,int mod);
-vector<vector<int> > grammianMatrix(vector<vector<int> > ,vector<vector<int> > , vector<vector<int> >, int );
-int findMultiple(int number,vector<vector<int> > multi);
-vector<int> multiplyVector(int numMult,vector<int> input,vector<vector<int> > multi ,int mod);
-void permute(vector<vector<int> > input, int i, int n,vector<vector<int> > cap1,vector<vector<int> > multi, vector<vector<int> > add,int mod, bool &failed,bool lastElement,bool normal);
-bool capAreIsomorphic(vector<vector<int> > cap1,vector<vector<int> > cap2, vector<vector<int> > multi, vector<vector<int> > add,int mod,bool normal);
-bool capAreEqual(vector<vector<int> > cap1,vector<vector<int> > cap2, vector<vector<int> > multi, vector<vector<int> > add,int mod);
-vector<vector<vector<int> > > findCaps(vector<vector<int> > vectors,vector<vector<int> > multi, vector<vector<int> > add,int mod,vector<vector<int> > input,vector<vector<vector<int> > > oldResults);
+int quadraticAny(const vector<int> &array,const vector<vector<int> > &multi,const vector<vector<int> > &add);
+void generateGrammian(vector<vector<int> > input,const vector<vector<int> > &multi,const vector<vector<int> > &add,const int &mod,vector<int> &returnArray);
+void grammianMatrix(const vector<vector<int> > &matrix,const vector<vector<int> > &multi,const vector<vector<int> > &add,const int &mod,vector<vector<int> > &results);
+void findMultiple(const int &number,const vector<vector<int> > &multi,int &results);
+void multiplyVector(const int &numMult,const vector<int> &input,const vector<vector<int> > &multi,const int &mod,vector<int> &results);
+void permute(vector<vector<int> > input, int i,const int &n,const vector<vector<int> > &cap1,const vector<vector<int> > &multi, const vector<vector<int> > &add,const int &mod, bool &failed,bool lastElement,bool normal);
+bool capAreIsomorphic(const vector<vector<int> > &cap1, const vector<vector<int> > &cap2, const vector<vector<int> > &multi, const vector<vector<int> > &add, const int &mod, const bool &normal);
+bool capAreEqual(const vector<vector<int> > &cap1,const vector<vector<int> > &cap2,const vector<vector<int> > &multi,const vector<vector<int> > &add,const int &mod);
+void findCaps(const vector<vector<int> > &vectors,const vector<vector<int> > &multi, const vector<vector<int> > &add,const int &mod,const vector<vector<int> > &input,const vector<vector<vector<int> > > &oldResults, vector< vector<vector<int> > > &allCapsResults);
 int s_to_i(string);
-vector<vector<vector<int> > > findAlltheCaps(vector<vector<int> > vectors,vector<vector<int> > multi, vector<vector<int> > add,int mod,vector<vector<int> > input);
-void fileWriteCaps(vector< vector< vector <int> > > arrayVector,string fileName);
-int f(vector<int>  x, vector<int>  y, vector<vector<int> > mult, vector<vector<int> > add);
+vector<vector<vector<int> > > findAlltheCaps(const vector<vector<int> > &vectors,const vector<vector<int> > &multi,const vector<vector<int> > &add,const int &mod,const vector<vector<int> > &input);
+void fileWriteCaps(const vector< vector< vector <int> > > &arrayVector,const string &fileName,const int &i);
+int fileReadCaps(vector< vector< vector <int> > > &result,const string &fileName);
+bool file_empty(const string &fileName);
+int f(const vector<int>  &x,const vector<int>  &y,const vector<vector<int> > &mult,const vector<vector<int> > &add);
 static inline void loadbar(unsigned int x, unsigned int n, unsigned int w);
 
 int main() {
@@ -88,20 +88,21 @@ int main() {
 	cap3Pool[2] = vectors[2];
 	vector<vector<vector<int> > > capPool = findAlltheCaps(vectors,multiA,addA,SIZE,cap3Pool);
 
+
 	//if this algorithm ever finishes then its going to print out the results
-	cout << "Cap pool " << capPool.size() << "*************" << endl;
+	cout << "Cap pool " << capPool.size() << "************* " << capPool[1].size() << " --- " << capPool[1][0].size() <<endl;
 	for(int i=0;i<capPool.size();i++){
 		for(int j=0;j<capPool[i].size();j++){
 			for(int k=0;k<capPool[i][j].size();k++)
 				cout << capPool[i][j][k];
 			cout << endl;
 		}
-		cout << "cap"<< i <<" ends " << endl;
+		cout << "cap "<< i <<" ends " << endl;
 	}
 
 	return 0;
 }
-vector<vector<vector<int> > > findAlltheCaps(vector<vector<int> > vectors,vector<vector<int> > multi, vector<vector<int> > add,int mod,vector<vector<int> > input){
+vector<vector<vector<int> > > findAlltheCaps(const vector<vector<int> > &vectors,const vector<vector<int> > &multi,const vector<vector<int> > &add,const int &mod,const vector<vector<int> > &input){
 
 	/*
 	 * Cap size 4 work *******************************************************
@@ -124,7 +125,8 @@ vector<vector<vector<int> > > findAlltheCaps(vector<vector<int> > vectors,vector
 	vector<vector<vector<int> > > cap5pool; //this is empty at this point coz there is no calculations have been done before. Using this to just send an empty vector list for the function
 
 	//finding cap size 4 non isomorphic sets of vectors
-	vector<vector<vector<int> > > cap4Pool = findCaps(list,multi,add,SIZE,input,cap5pool);
+	vector<vector<vector<int> > > cap4Pool;
+	findCaps(list,multi,add,SIZE,input,cap5pool,cap4Pool);
 	cout << "\n cap4 pool size " << cap4Pool.size() << endl;
 
 	/*
@@ -149,12 +151,20 @@ vector<vector<vector<int> > > findAlltheCaps(vector<vector<int> > vectors,vector
 	}
 	cout << "cap4 list size " << cap4List[0].size() << " " << cap4List[1].size() << endl; //Debugging line
 
+	//Resume the program if a file exists
+	int startIndex = 0;
+	if(!file_empty("cap5")){
+		startIndex = fileReadCaps(cap5pool,"cap5")+1;
+		cout << "resuming at pool size: " << cap5pool.size() << " and starting at : " << startIndex << endl;
+	}
+
 	//finding cap size 5 non isomorphic sets of vectors for each cap4 set of vector
-	for(int i=0;i<cap4Pool.size();i++){
-		vector<vector<vector<int> > > temp = findCaps(cap4List[i],multi,add,SIZE,cap4Pool[i],cap5pool); //doing all the calculations
+	for(int i=startIndex;i<cap4Pool.size();i++){
+		vector<vector<vector<int> > > temp;
+		findCaps(cap4List[i],multi,add,SIZE,cap4Pool[i],cap5pool,temp); //doing all the calculations
 		cap5pool.insert(cap5pool.end(), temp.begin(), temp.end()); //add it to the pool
-		cout << "Ran through cap4 " << i << " size of " << temp.size() << " and pool size is "<< cap5pool.size() << endl;
-		fileWriteCaps(cap5pool,"cap5"); //Save the pool into a file
+		cout << endl << "Ran through cap4 " << i << " size of " << temp.size() << " and pool size is "<< cap5pool.size() << endl;
+		fileWriteCaps(cap5pool,"cap5",i); //Save the pool into a file
 	}
 	cout << "\n cap5 size " << cap5pool.size() << endl;
 
@@ -181,12 +191,20 @@ vector<vector<vector<int> > > findAlltheCaps(vector<vector<int> > vectors,vector
 	}
 	cout << "cap5 list size " << cap5List[0].size() << " " << cap5List[1].size() << endl; //debugging, to check how many singular point are there
 
+	//Resume the program if a file exists
+	startIndex = 0;
+	if(!file_empty("cap6")){
+		startIndex = fileReadCaps(cap6pool,"cap6")+1;
+		cout << "resuming at pool size: " << cap6pool.size() << " and starting at : " << startIndex << endl;
+	}
+
 	//finding cap size 6 non isomorphic sets of vectors for each cap5 vector set
-	for(int i=0;i<cap5pool.size();i++){
-			vector<vector<vector<int> > > temp = findCaps(cap5List[i],multi,add,SIZE,cap5pool[i],cap6pool); //calculation
+	for(int i=startIndex;i<cap5pool.size();i++){
+			vector<vector<vector<int> > > temp;
+			findCaps(cap5List[i],multi,add,SIZE,cap5pool[i],cap6pool,temp); //calculation
 			cap6pool.insert(cap6pool.end(), temp.begin(), temp.end());//adding it into the pool
 
-			cout << "Ran through cap5 " << i << " size of " << temp.size() << " and pool size is "<< cap6pool.size() << endl;
+			cout << endl << "Ran through cap5 " << i << " size of " << temp.size() << " and pool size is "<< cap6pool.size() << endl;
 			cout << " sample out " << endl;
 			//printing (debugging step to check things)
 			for(int p=0;p<cap6pool[cap6pool.size()-1].size();p++){
@@ -195,7 +213,7 @@ vector<vector<vector<int> > > findAlltheCaps(vector<vector<int> > vectors,vector
 				}
 				cout << endl;
 			}
-			fileWriteCaps(cap6pool,"cap6"); //Writing to the file
+			fileWriteCaps(cap6pool,"cap6",i); //Writing to the file
 		}
 		cout << "\n cap6 size " << cap6pool.size() << endl; //printing the size of pool
 
@@ -203,10 +221,10 @@ vector<vector<vector<int> > > findAlltheCaps(vector<vector<int> > vectors,vector
 }
 
 //This where all the magic happens
-vector<vector<vector<int> > > findCaps(vector<vector<int> > vectors,vector<vector<int> > multi, vector<vector<int> > add,int mod,vector<vector<int> > input,vector<vector<vector<int> > > oldResults){
+void findCaps(const vector<vector<int> > &vectors,const vector<vector<int> > &multi, const vector<vector<int> > &add,const int &mod,const vector<vector<int> > &input,const vector<vector<vector<int> > > &oldResults, vector< vector<vector<int> > > &allCapsResults){
 
 	vector< vector<int> > capResults;
-	vector< vector<vector<int> > > allCaps;
+//	vector< vector<vector<int> > > allCaps;
 
 	for(int i=0;i<vectors.size();i++){ //going through individual singular points
 		loadbar(i,vectors.size(),50); //printing the status to the terminal
@@ -223,9 +241,9 @@ vector<vector<vector<int> > > findCaps(vector<vector<int> > vectors,vector<vecto
 			capResults.push_back(vectors[i]);
 			bool isoFailed = false;
 			#pragma omp parallel for //for compiler directive for for OpenMp
-			for(int j=0;j<allCaps.size();j++){
+			for(int j=0;j<allCapsResults.size();j++){
 				#pragma omp flush (isoFailed)
-				if(!isoFailed && capAreIsomorphic(allCaps[j],capResults,multi,add,SIZE,false)){ //check for isomorphism. AKA, check whether vector sets are the same
+				if(!isoFailed && capAreIsomorphic(allCapsResults[j],capResults,multi,add,SIZE,false)){ //check for isomorphism. AKA, check whether vector sets are the same
 					isoFailed = true;
 					#pragma omp flush (isoFailed)
 				}
@@ -241,13 +259,12 @@ vector<vector<vector<int> > > findCaps(vector<vector<int> > vectors,vector<vecto
 				}
 			}
 			if(!isoFailed){ //if all the conditions pass up there, then this is worthy of going into the selected results for particular set
-//				cout << "found one " << endl;
-				allCaps.push_back(capResults);
+				allCapsResults.push_back(capResults);
 			}
 			capResults.clear();
 		}
 //	}
-	return allCaps;
+//	return allCapsResults;
 }
 vector<int> modCheck(vector<int> abc, int modulo) {
 	for (int i = 0; i < abc.size(); i++) {
@@ -256,16 +273,16 @@ vector<int> modCheck(vector<int> abc, int modulo) {
 	return abc;
 
 }//end modCheck function
-bool capAreIsomorphic(vector<vector<int> > cap1,vector<vector<int> > cap2, vector<vector<int> > multi, vector<vector<int> > add,int mod,bool normal){
+bool capAreIsomorphic(const vector<vector<int> > &cap1, const vector<vector<int> > &cap2, const vector<vector<int> > &multi, const vector<vector<int> > &add, const int &mod, const bool &normal){
 	//This function permute all the vectors and check whether they are isomorphic
 	bool failed = false;
 	permute(cap2,0,cap2.size()-1,cap1,multi,add,mod,failed,false,normal); //capSize-1 = 3 and starts at 0
-//	cout << "condition is " << failed << endl;
 	return failed;
 }
 
 
-void permute(vector<vector<int> > input, int i, int n,vector<vector<int> > cap1,vector<vector<int> > multi, vector<vector<int> > add,int mod, bool &failed,bool lastElement,bool normal)
+//This is a recursive method
+void permute(vector<vector<int> > input, int i,const int &n,const vector<vector<int> > &cap1,const vector<vector<int> > &multi, const vector<vector<int> > &add,const int &mod, bool &failed,bool lastElement,bool normal)
 {
    int j;
    if (i == n){
@@ -307,68 +324,59 @@ void permute(vector<vector<int> > input, int i, int n,vector<vector<int> > cap1,
    }
 }
 
-bool capAreEqual(vector<vector<int> > cap1,vector<vector<int> > cap2, vector<vector<int> > multi, vector<vector<int> > add,int mod){
+bool capAreEqual(const vector<vector<int> > &cap1,const vector<vector<int> > &cap2,const vector<vector<int> > &multi,const vector<vector<int> > &add,const int &mod){
 	//get the grammian out of the vectors and check agents each other. AKA isomorphic or not
-	vector<int> cap1Results=generateGrammian(cap1,multi,add,mod);
-	vector<int> cap2Results=generateGrammian(cap2,multi,add,mod);
-//	cout << "cap1 abc : ";
-//	for(int i=0;i<cap1Results.size();i++)
-//		 cout << cap1Results[i] << " ";
-//	cout << endl << "cap2 abc : ";
-//	for(int i=0;i<cap1Results.size();i++)
-//		cout << cap2Results[i] << " ";
-//	cout << endl;
-//	cout << "###################################################################### "<<endl;
+	vector<int> cap1Results;
+	generateGrammian(cap1,multi,add,mod,cap1Results);
+	vector<int> cap2Results;
+	generateGrammian(cap2,multi,add,mod,cap2Results);
+
 	if(cap1Results == cap2Results){
 		return true;
 	}
 	return false;
 
 }
-vector<int> generateGrammian(vector<vector<int> > input,vector<vector<int> > multi, vector<vector<int> > add,int mod){
+void generateGrammian(vector<vector<int> > input,const vector<vector<int> > &multi,const vector<vector<int> > &add,const int &mod,vector<int> &returnArray){
 
 	//Grammian matrix (lots of math)
-	vector< vector<int> > array = grammianMatrix(input,multi,add,mod);
+	vector< vector<int> > array(input.size(),vector<int>(input.size(),0));
+	grammianMatrix(input,multi,add,mod,array);
 	for(int i=1; i<input.size();i++){
-			int multiple = findMultiple(array[0][i],multi);
-			input[i]=multiplyVector(multiple,input[i],multi,mod);
-			array = grammianMatrix(input,multi,add,mod);
-	}
+		if(array[0][i]!=1){
+			int multiple;
+			findMultiple(array[0][i],multi,multiple);
+			multiplyVector(multiple,input[i],multi,mod,input[i]);
+//			array = grammianMatrix(input,multi,add,mod);
+		}
 
-//	cout << "checkCap " << endl;
-	//I only need the half of the matrix
-	vector<int> returnArray;
-	#pragma omp parallel for
+	}
+	grammianMatrix(input,multi,add,mod,array);
+
+//	#pragma omp parallel for
 	for(int i=1;i<array.size()-1;i++){
 		for(int j=i+1;j<array[i].size();j++){
 			returnArray.push_back(array[i][j]);
-//			cout << " &&&&&&&&&&&& " << i << " " << j << " ";
 		}
 	}
-//	cout << endl;
-//			cout << array[i][j] << " ";
-//			if(i!=0 && j!=0 && i!=j)
-//				returnArray.push_back(array[i][j]);
-//		}
-//		cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"<< endl;
-//	}
+
+
 
 	if(returnArray[0]!=1){ //if it is 1 then there is nothing to do
-		int multiplicationNumber=findMultiple(returnArray[0],multi); //dont have to multiply manually, just have to find multiple from multiplication array
-		#pragma omp parallel for
+		int multiplicationNumber;
+		findMultiple(returnArray[0],multi,multiplicationNumber); //dont have to multiply manually, just have to find multiple from multiplication array
+//		#pragma omp parallel for
 		for(int i=0;i<returnArray.size();i++){
 			returnArray[i]=multi[returnArray[i]][multiplicationNumber];
 		}
 	}
 
-	return returnArray;
 }
-int bilinearFormAny(vector<int> arrayA,vector<int> arrayB ,vector<vector<int> > multi,vector<vector<int> > add,int size, int mod){
-	int sum = 0;
+void bilinearFormAny(const vector<int> &arrayA,const vector<int> &arrayB ,const vector<vector<int> > &multi,const vector<vector<int> > &add,const int &size,const int &mod,int &results){
+	results = 0;
 	for (int j = 0; j < size; j++) {
-		sum = add[multi[arrayA[j]][arrayB[(size-1) - j]]][sum];
+		results = add[multi[arrayA[j]][arrayB[(size-1) - j]]][results];
 	}
-	return sum;
 }
 int bilinearFormOdd(vector<int> arrayA,vector<int> arrayB ,vector<vector<int> > multi,vector<vector<int> > add,int size, int mod){
 	int sum = 0;
@@ -384,40 +392,37 @@ int quadraticOdd(vector<int> array,vector<vector<int> > multi,vector<vector<int>
 	}
 	return sum;
 }
-int quadraticAny(vector<int> array,vector<vector<int> > multi,vector<vector<int> > add){
+int quadraticAny(const vector<int> &array,const vector<vector<int> > &multi,const vector<vector<int> > &add){
 	int sum = 0;
 	for (int j = 0; j < array.size()/2; j++) {
 		sum = add[multi[array[j]][array[(array.size()-1)-j]]][sum];
 	}
 	return sum;
 }
-vector<vector<int> > grammianMatrix(vector<vector<int> > matrix,vector<vector<int> > multi, vector<vector<int> > add, int mod){
+void grammianMatrix(const vector<vector<int> > &matrix,const vector<vector<int> > &multi,const vector<vector<int> > &add,const int &mod,vector<vector<int> > &results){
 
 	//generate grammianMatrix, this is just raw form of it
-	vector<vector<int> > results(matrix.size(),vector<int>(matrix.size(),0));
-	#pragma omp parallel for
+//	#pragma omp parallel for
 	for(int i=0; i<matrix.size();i++){
 		for(int j=i+1; j<matrix.size();j++){
-			results[i][j]=results[j][i]=bilinearFormAny(matrix[i],matrix[j],multi,add,matrix[i].size(), mod); // take the bilinear to generate the grammain
+			bilinearFormAny(matrix[i],matrix[j],multi,add,matrix[i].size(), mod,results[i][j]); // take the bilinear to generate the grammian =results[j][i]
 		}
 	}
-	return results;
 }
-int findMultiple(int number,vector<vector<int> > multi){
+void findMultiple(const int &number,const vector<vector<int> > &multi,int &results){
 	for(int i=0;i<multi.size();i++){
 		if(multi[number][i]==1){
-			return i;
+			results= i;
+			break;
 		}
 	}
-	return -1;
 }
-vector<int> multiplyVector(int numMult,vector<int> input, vector<vector<int> > multi, int mod){
+void multiplyVector(const int &numMult,const vector<int> &input,const vector<vector<int> > &multi,const int &mod,vector<int> &results){
 
-		#pragma omp parallel for
+//		#pragma omp parallel for
 		for(int i=0;i<input.size();i++){
-			input[i]=multi[input[i]][numMult];
+			results[i]=multi[input[i]][numMult];
 		}
-		return input;
 }
 //converting any string to int
 int s_to_i(string s )
@@ -430,7 +435,7 @@ int s_to_i(string s )
 }
 
 
-int f(vector<int>  x, vector<int>  y, vector<vector<int> > mult, vector<vector<int> > add)
+int f(const vector<int>  &x,const vector<int>  &y,const vector<vector<int> > &mult,const vector<vector<int> > &add)
   {
     vector<int> z(x.size());
     int sum=0;
@@ -444,24 +449,68 @@ int f(vector<int>  x, vector<int>  y, vector<vector<int> > mult, vector<vector<i
 
     return(sum);
   }
-void fileWriteCaps(vector< vector< vector <int> > > arrayVector,string fileName){
+void fileWriteCaps(const vector< vector< vector <int> > > &arrayVector,const string &fileName,const int &o){
 
 	ofstream outFile(fileName.c_str(),ios::out|ios::binary);
 	if(outFile){
 		for(int z=0;z<arrayVector.size();z++){
 			for(int i=0;i<arrayVector[z].size();i++){
-				for(int k=0;k<arrayVector[i].size();k++){
+				for(int k=0;k<arrayVector[z][i].size();k++){
 					outFile << arrayVector[z][i][k]<< " " ;
 				}
 				outFile << endl;
 			}
 			outFile << "|" << endl;
 		}
+		outFile << "***" << endl << o << endl;
 		outFile.close();
 	}
 	else cerr << "Something really went wrong!!" << endl;
 
 }
+int fileReadCaps(vector< vector< vector <int> > > &result,const string &fileName){
+
+	ifstream redFile(fileName.c_str(),ios::in|ios::binary);
+		if(redFile){
+			int count =0;
+			//Going though each line
+			for(string ovoid,value;getline(redFile, ovoid,'|');){
+				//Dividing the ovoid
+				istringstream ovd(ovoid);
+				vector< vector<int> > data;\
+				bool hitTheEnd = false;
+				for(string lines,value;getline(ovd, lines);){
+					if(lines=="***"|| hitTheEnd){
+						if(hitTheEnd)
+							return s_to_i(lines);
+						hitTheEnd = true;
+					}
+					else if(lines!=""){
+						//Dividing the line
+						istringstream line(lines);
+						vector<int> array;
+						while(getline(line,value,' ')){
+							array.push_back(s_to_i(value));
+						}
+						data.push_back(array);
+					}
+				}
+				result.push_back(data);
+				count++;
+			}
+		}
+		else cerr << "Something really went wrong!!" << endl;
+		redFile.close();
+		return -1;
+
+}
+//Checking whether file is there
+bool file_empty(const string &fileName)
+{
+	ifstream pFile(fileName.c_str(),ios::in|ios::binary);
+    return pFile.peek() == ifstream::traits_type::eof();
+}
+
 static inline void loadbar(unsigned int x, unsigned int n, unsigned int w = 50)
 {
     if ( (x != n) && (x % (n/100+1) != 0) ) return;
